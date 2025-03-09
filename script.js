@@ -79,7 +79,18 @@ function createHeart() {
     const heart = document.createElement('div');
     heart.className = 'heart';
     heart.innerHTML = '❤️';
+    
+    // Posição horizontal aleatória
     heart.style.left = Math.random() * 100 + 'vw';
+    
+    // Tamanho aleatório
+    const size = 14 + Math.random() * 20;
+    heart.style.fontSize = size + 'px';
+    
+    // Rotação aleatória
+    const rotation = Math.random() * 360;
+    heart.style.transform = `rotate(${rotation}deg)`;
+    
     document.getElementById('hearts-container').appendChild(heart);
     
     heart.addEventListener('animationend', () => {
@@ -91,7 +102,18 @@ function createSad() {
     const sad = document.createElement('div');
     sad.className = 'sad';
     sad.innerHTML = '😢';
+    
+    // Posição horizontal aleatória
     sad.style.left = Math.random() * 100 + 'vw';
+    
+    // Tamanho aleatório
+    const size = 14 + Math.random() * 20;
+    sad.style.fontSize = size + 'px';
+    
+    // Rotação aleatória
+    const rotation = Math.random() * 360;
+    sad.style.transform = `rotate(${rotation}deg)`;
+    
     document.getElementById('sad-container').appendChild(sad);
     
     sad.addEventListener('animationend', () => {
@@ -136,8 +158,36 @@ document.getElementById('wholeHeart').addEventListener('click', () => {
         currentLevel = Math.min(Math.floor(progress / 10), messages.length - 1);
         updateContent();
         
-        for (let i = 0; i < Math.ceil(progress / 10); i++) {
-            setTimeout(() => createHeart(), i * 100);
+        // Quantidade aumenta com o progresso
+        const baseAmount = 10; // Quantidade base de corações
+        const multiplier = Math.floor(progress / 10); // Aumenta com o progresso
+        const totalHearts = baseAmount + (multiplier * 5); // Mais corações conforme avança
+        
+        for (let i = 0; i < totalHearts; i++) {
+            // Distribuição no tempo também aumenta
+            const delay = i * (50 / multiplier); // Delay diminui conforme progresso aumenta
+            setTimeout(() => {
+                createHeart();
+                // Cria corações extras nos últimos níveis
+                if (progress > 80) {
+                    setTimeout(() => createHeart(), 100);
+                }
+                if (progress > 90) {
+                    setTimeout(() => createHeart(), 200);
+                    setTimeout(() => createHeart(), 300);
+                }
+            }, delay);
+        }
+        
+        // Chuva especial quando chega a 100%
+        if (progress === 100) {
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    createHeart();
+                    createHeart();
+                    createHeart();
+                }, i * 30);
+            }
         }
     }
 });
@@ -148,8 +198,23 @@ document.getElementById('brokenHeart').addEventListener('click', () => {
         progress -= 10;
         updateContent();
         
-        for (let i = 0; i < 5; i++) {
-            setTimeout(() => createSad(), i * 100);
+        // Quantidade de carinhas tristes aumenta quando volta mais níveis
+        const baseAmount = 8; // Quantidade base de carinhas tristes
+        const multiplier = currentLevel + 1; // Aumenta baseado no nível atual
+        const totalSads = baseAmount + (multiplier * 3);
+        
+        for (let i = 0; i < totalSads; i++) {
+            const delay = i * (70 / multiplier);
+            setTimeout(() => {
+                createSad();
+                // Carinhas tristes extras nos primeiros níveis
+                if (currentLevel < 3) {
+                    setTimeout(() => createSad(), 100);
+                }
+                if (currentLevel < 2) {
+                    setTimeout(() => createSad(), 200);
+                }
+            }, delay);
         }
     }
 });
